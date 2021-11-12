@@ -223,16 +223,14 @@ sudo systemctl enable mongod
 
 - Name your alarm, and set the threshold you would like to be notified by
 
-if you have an SNS group already set up, you can link it here
+- if you have an SNS group already set up, you can link it here
 
-Otherwise, enter the Cloudwatch dashboard and edit the alarm
+- Otherwise, enter the Cloudwatch dashboard and edit the alarm
 
-Add a new SNS group, and add the email addresses you would like to have notified when the alarm is triggered
+- Add a new SNS group, and add the email addresses you would like to have notified when the alarm is triggered
 
-You should now receive an email asking you to confirm the subscription
+- You should now receive an email asking you to confirm the subscription
 
-Congratulations, AWS will now let you know when your instance triggers an alarm!
+- Congratulations, AWS will now let you know when your instance triggers an alarm!
 
-Full guide to editing or setting up an alarm here
-
-More on SNS groups here
+- Full guide to editing or setting up an alarm here
