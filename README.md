@@ -234,3 +234,151 @@ sudo systemctl enable mongod
 - Congratulations, AWS will now let you know when your instance triggers an alarm!
 
 - Full guide to editing or setting up an alarm here
+
+### AWS Monitoring
+#### Questions to ask
+- What should we monitor?
+- What resources will we monitor
+- How often will we monitor
+- What tools are we going to use to perform these tasks
+- Who will perform the monitoring
+- Who should be notified by the alarm
+- **Monitoring endpoints**
+- Application Server - EC2
+- CPU utilisation %
+- Number of requests - REsponse Time - Latency
+- Firewall
+  
+- **Four Golden Signals of Monitoring**
+- Latency: Time taken to service a request
+- Traffic: How much demand is being placed on your system
+- Errors: The rate at which requests fail
+- Saturation: How full the service is
+
+#### Resources Monitored by CloudWatch
+- EC2
+- Auto-Scaling
+- Load Balancer
+- Amazon SNS
+- Amazon SQS
+- Amazon RDS
+- Amazon S3
+- DynamoDB
+
+#### CloudWatch Alarm Actions
+- SNS email notification
+- Auto-Scaling
+- Automating the Processess
+- Application Load Balancer ALB
+- Autoscaling Group
+
+Launch template config - how many instances at all times
+2 instances - Min=2 and Max=3
+Policies of scaling out - and scaling in to min=2
+Scaling on Demand
+Scaling up
+Increasing the size of your instance
+Scaling out
+Increasing the number of instances
+AWS Simple Storage Servie S3
+Object storage service offering scalability, data availability, security, and performance
+Used to store and protect any amount of data
+Good tool for Disaster Recovery Planning
+S3 Storage Classes:
+Standard - `S3 Glacier
+To Create AWS CLI:
+Dependencies:
+
+python3 with any other requried
+AWS access and secret keys
+
+S3 access through our IAM role/account
+
+apply CRUD: Create - Read- Update - Delete
+Data Persistency
+
+- Commands
+```
+sudo apt-get update
+sudo apt-get upgrade -y
+sudo apt-get install python -y
+sudo apt-get install python-pip -y
+sudo pip install awscli -y
+sudo apt install python3 -y
+sudo apt install python3-pip -y
+alias python=python3
+```
+
+### s3
+- `aws s3 ls` to list buckets
+- `aws --version`
+- `aws configure` to add our keyys and config
+- `aws s3 mb s3://name --region name`
+- `aws s3 cp s3://name/ file.md` to write in to s3
+- `aws s3 cp file.md s3://name/file.md` to download into instance
+- `aws s3 rm s3://bucknetname -- recursive`
+- `aws s3 rb s3://bucketname`
+- `aws s3 sync s3://bucketname/ test` to copy everything from s3 bucket into test folder
+
+### AWSCLI
+- AWSCLI can be used to create any `aws` resources required 
+
+### S3 Python CRUD Activity
+![Reference:] (https://boto3.amazonaws.com/v1/documentation/api/latest/guide/s3-examples.html)
+- Launch new EC2 ubuntu instance: 18.04
+- download all depencies
+
+### Autoscaling and Load Balancing
+- **Application Load Balancer**
+- Autoscaling *automatically adjusts the amount of computational resources based on the server load.
+![](autoscaling.png)
+
+#### Creating a Launch Template
+- Click `Create launch template` under `Ec2 >(Scroll down on the left side) Instances > Launch Templates` in the AWS console.
+- choose a name for `Launch template Name - required` for instance here as `devops-prathima-lt-asg`
+- Check/click on `Provide guidance to help me set up a template that I can use with EC2 Auto Scaling` under `Auto Scaling guidance`
+- Add tag under `Template tags` Key: `Name`, Value: `devops-prathima-lt-asg` 
+- Select AMI as `Ubuntu Server 18.04 LTS` and Instance type as `t2.micro`
+- Choose the `key pair` as `devopsbootcamp`
+- Select `VPC` & `devops_prathima_app_SG` as Security Groups
+- provide the provisioning script in the Advanced details > User data
+```ruby
+#!/bin/bash
+sudo apt-get update -y
+sudo apt-get upgrade -y
+sudo apt-get install nginx -y
+sudo systemctl restart nginx
+sudo systemctl enable nginx
+```
+- Click on `Create Launch template`
+
+#### Creating Auto Scaling Group
+- Scroll down to `Auto Scaling Groups` by scrolling down on the left side after click on `Ec2` under `Auto Scaling`.
+- Click on `Create an Auto Scaling group`
+- choose a name for `Auto Scaling group name` for example as `devops-prathima-asg-app`
+- choose the Launch Template as `devops-prathima-lt-asg` that is already created and select `Latest(1)` under `Version` and click `Next`
+- For let's keep the `default public VPC`, but select 3 subnets under `Availability Zones and subnets` as `eu-west-1a`,`eu-west-1b` and `eu-west-1c` 
+- Check/click on `Provide guidance to help me set up a template that I can use with EC2 Auto Scaling` under `Auto Scaling guidance`
+- Click on `Next`
+- select `Attach to a new load balancer` for Load balancing - optional
+- For `Attach to a new load balancer`, select Load Balancer type => `Application Load Balancer`, Load balancer name => `devops-prathima-asg-app`, Load balancer scheme => `Internet Facing`, Network Mapping => `VPC` & 3 subnets already chosen, Listeners and routing => `Protocol: HTTP`, `Port:80`, Default routing => Create a target group : devops-prathima-asg-app-1'
+- Leave health checks type : EC2, health check grace period: 300 seconds
+- Under Additional settings, click/select `Enable group metrics collection within CloudWatch`
+- Click `Next`
+- Group Size => Desired Capacity: 2, Minimum Capacity: 2, Maximum Capacity: 3 and select `Target tracking scaling policy` & choose `Target Value: 30`
+- Click `Next`, At this point we are not adding any notification as we have already done it.
+- Click `Next`, we have already done tags, so click `Next`
+- Review and click on `Create Auto Scaling group`
+- To confirm whether this Auto Scaling Group has actually launched the instances click on `EC2 Dashboard`=>`Instances(running) 
+- Name the two instances running as `devops-prathima-new-asg` & `devops-prathima-new-asg1`
+- By connecting to any instance & copying the public ip and copy in the browser `http://3.250.175.10` will straight away display nginx server running without even ssh into the instance.
+
+- **To confirm if the auto scaling has been working**
+- Forcefully, terminate one of the instance, after about 300 seconds, health check will be done and a new instance will be spin out.
+
+### To setup Auto Scaling Group to the nodeapp
+- use the nodeapp AMI that we have saved
+- use nodeapp provisioning script while creating the `Launch Template`
+- expose/add `port:3000` along with `80` in the Listeners and routing.
+  
+
