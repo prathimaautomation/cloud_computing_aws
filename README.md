@@ -404,5 +404,5 @@ sudo systemctl enable nginx
 
 - Testing the VPC Config for public subnet and SG for our ap Tested and passed
 
-
+- To run the app in the background `nohup node app.js > /dev/null 2>&1 &` and to stop we have to find the process and kill.
 
