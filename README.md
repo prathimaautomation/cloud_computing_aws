@@ -381,4 +381,28 @@ sudo systemctl enable nginx
 - use nodeapp provisioning script while creating the `Launch Template`
 - expose/add `port:3000` along with `80` in the Listeners and routing.
   
+## Virtual Private Cloud (VPC)
+![](vpc_infrastructure.png)
+- Step 1: VPC CIDR block 10.109.0.0/16
+  
+- Step 2: Internet gateway
+-     2.1 attach the IG to VPC
+
+- Step 3: Route Table RT
+-      3.1: allow 10.109.0.0/16
+-      3.2: allow all 0.0.0.0/16
+
+- Step 4: Public Subnet 10.109.1.0/24 for Node-app 3000
+-    4.1: connect to our VPC 
+-    4.2: private subnet 10.109.2.0/24 for Mongodb 27017
+
+- Step 5: associate public subnet to our RT
+
+- Step 6: Security groups public and private with required rules for public and private subnets.
+-    6.1: SG rules for the app: 80(anywhere), 3000(anywhere), 22 (from myIP for ssh)
+-    6.2: SG rules for the db: 27017 from the app or app SG or 0.0.0.0:27017 (10.109.1.0/24), 22 from myIP 
+
+- Testing the VPC Config for public subnet and SG for our ap Tested and passed
+
+
 
